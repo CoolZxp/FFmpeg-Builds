@@ -1,0 +1,17 @@
+diff --git a/libavformat/flvdec.c b/libavformat/flvdec.c
+index 22a9b9e4a7..ba32ebb573 100644
+--- a/libavformat/flvdec.c
++++ b/libavformat/flvdec.c
+@@ -1472,10 +1472,11 @@ retry_duration:
+                     av_log(s, AV_LOG_WARNING,
+                         "Negative cts, previous timestamps might be wrong.\n");
+                 flv->wrong_dts = 1;
++                pts = AV_NOPTS_VALUE;
+             } else if (FFABS(dts - pts) > 1000*60*15) {
+                 av_log(s, AV_LOG_WARNING,
+                        "invalid timestamps %"PRId64" %"PRId64"\n", dts, pts);
+-                dts = pts = AV_NOPTS_VALUE;
++                pts = AV_NOPTS_VALUE;
+             }
+             size -= 3;
+         }
