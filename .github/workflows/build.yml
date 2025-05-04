@@ -13,31 +13,31 @@ on:
         type: boolean
         default: false
         required: false
-  schedule:
-    - cron: '42 13 * * *'
+#  schedule:
+#    - cron: '42 13 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
 
 jobs:
-  pre_check:
-    name: Pre Checks
-    if: ${{ github.event.inputs.buildOnly != 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Repo Check
-        run: |
-          if [[ "$GITHUB_REPOSITORY" != "yt-dlp/FFmpeg-Builds" ]]; then
-            echo "When forking this repository to make your own builds, you have to adjust this check."
-            echo "When doing so make sure to randomize the scheduled cron time above, in order to spread out the various build times as much as possible."
-            echo "This has been put in place due to the enormous amounts of traffic hundreds/thousands of parallel builds can cause on external infrastructure."
-            exit 1
-          fi
-          exit 0
+#  pre_check:
+#    name: Pre Checks
+#    if: ${{ github.event.inputs.buildOnly != 'true' }}
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Repo Check
+#        run: |
+#          if [[ "$GITHUB_REPOSITORY" != "yt-dlp/FFmpeg-Builds" ]]; then
+#            echo "When forking this repository to make your own builds, you have to adjust this check."
+#            echo "When doing so make sure to randomize the scheduled cron time above, in order to spread out the various build times as much as possible."
+#            echo "This has been put in place due to the enormous amounts of traffic hundreds/thousands of parallel builds can cause on external infrastructure."
+#            exit 1
+#          fi
+#          exit 0
   build_base:
     name: Build base image
     if: ${{ github.event.inputs.buildOnly != 'true' }}
-    needs: pre_check
+#    needs: pre_check
     strategy:
       fail-fast: false
       matrix:
@@ -113,7 +113,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win32,win64,winarm64,linux64,linuxarm64]
+        target: [win64,linux64,linuxarm64]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc && df -h
@@ -168,7 +168,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win32,win64,winarm64]
+        target: [win64]
         variant: [gpl,gpl 7.1,gpl-shared,gpl-shared 7.1]
         include:
           - target: linux64
@@ -242,7 +242,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win32,win64,winarm64]
+        target: [win64]
         variant: [gpl,gpl 7.1,gpl-shared,gpl-shared 7.1]
         include:
           - target: linux64
@@ -323,10 +323,10 @@ jobs:
           gh release create "$TAGNAME" --target "master" --title "$NAME" latest_artifacts/*
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Update Wiki
-        run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+#      - name: Update Wiki
+#        run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
       - name: Prune old releases
         run: ./util/prunetags.sh
         env:
